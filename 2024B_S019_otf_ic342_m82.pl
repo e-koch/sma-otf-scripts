@@ -39,7 +39,8 @@ $inttime_gain="15";
 # $scanSpeedOTF = "4.5";  # "/s
 
 # M82 map params
-# 9.5 min per map + 3 min on gain cals
+# 12 min per half-map + 3 min on gain cals
+# 30 min for full map + gain loop
 $targ0="M82 -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270";
 $nmaps0="8"; # for M81-group
 #  -- loops for 4.25 hr
@@ -61,7 +62,8 @@ $cal1="0841+708"; $ncal1="6"; #for M82
 
 
 # IC342 params
-# 10.5 min per map + 3 min on gain cals
+# 12 min per half-map + 3 min on gain cals
+# 30 min for full map + gain loop
 $targ1="IC342 -r 03:46:34.8  -d +68:06:04 -e 2000 -v -30";
 $nmaps1="10"; # for IC342
 #  -- loops for 5 hr

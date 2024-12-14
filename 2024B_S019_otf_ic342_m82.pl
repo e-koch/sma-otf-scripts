@@ -123,13 +123,6 @@ observeTargetLoopOTFInterleave($cal2,$inttime_gain,
                      $nmaps1,$rowLength1,$rowOffset1,$nRows1,$posAngle1,
                      $scanSpeedOTF1);
 
-# Final gain scans
-command("observe -s $cal2 ");
-command("integrate -t $inttime -s $ncal2");
-
-command("observe -s $cal3 ");
-command("integrate -t $inttime -s $ncal3");
-
 print "----- M81-group science target observe loop -----\n";
 # -- loops for 4 hr
 observeTargetLoopOTFInterleave($cal0,$inttime_gain,
@@ -137,13 +130,6 @@ observeTargetLoopOTFInterleave($cal0,$inttime_gain,
                      $targ0,$inttime_sci,$nmaps0,
                      $rowLength0,$rowOffset0,$nRows0,$posAngle0,
                      $scanSpeedOTF);
-
-# Final gain scans
-command("observe -s $cal0 ");
-command("integrate -t $inttime -s $ncal0");
-
-command("observe -s $cal1 ");
-command("integrate -t $inttime -s $ncal1");
 
 print "----- final flux and bandpass calibration -----\n";
   &DoFlux(flux0,nflux0);
@@ -267,6 +253,15 @@ sub observeTargetLoopOTF {
 
     my $loopCount = 0;
     while ($loopCount < $numLoopsOTF) {
+
+        print "########################################\n";
+        print "########################################\n";
+        print "Starting OTF loop $loopCount\n";
+        print "Loop $loopCount of $numLoopsOTF for $scienceSouString\n";
+        print "Gain cals are $gainSouString0 and $gainSouString1\n";
+        print "########################################\n";
+        print "########################################\n";
+
         observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
         observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
         observeTargetOTF($scienceSouString, $intLengthTarget,
@@ -274,6 +269,18 @@ sub observeTargetLoopOTF {
                          $nRowsOTF, $posAngleOTF );
         $loopCount++;
     }
+
+    print "########################################\n";
+    print "########################################\n";
+    print "Finished OTF loops $loopCount for$scienceSouString\n";
+    print "########################################\n";
+    print "########################################\n";
+
+    print "########################################\n";
+    print "Finishing observeTargetLoopOTF with final gain scans\n";
+    print "########################################\n";
+    observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
+    observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
 
     return 0;
 }
@@ -319,6 +326,15 @@ sub observeTargetLoopOTFInterleave {
 
     my $loopCount = 0;
     while ($loopCount < $numLoopsOTF) {
+
+        print "########################################\n";
+        print "########################################\n";
+        print "Starting OTF interleaved loop $loopCount\n";
+        print "Loop $loopCount of $numLoopsOTF for $scienceSouString\n";
+        print "Gain cals are $gainSouString0 and $gainSouString1\n";
+        print "########################################\n";
+        print "########################################\n";
+
         observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
         observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
 
@@ -348,6 +364,18 @@ sub observeTargetLoopOTFInterleave {
 
         $loopCount++;
     }
+
+    print "########################################\n";
+    print "########################################\n";
+    print "Finished OTF interleaved loops $loopCount for$scienceSouString\n";
+    print "########################################\n";
+    print "########################################\n";
+
+    print "########################################\n";
+    print "Finishing observeTargetLoopOTFInterleave with final gain scans\n";
+    print "########################################\n";
+    observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
+    observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
 
     return 0;
 }

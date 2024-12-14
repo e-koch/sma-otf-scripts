@@ -41,7 +41,7 @@ $inttime_gain="15";
 # M82 map params
 # 9.5 min per map + 3 min on gain cals
 $targ0="M82 -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270";
-$nmaps0="10"; # for M81-group
+$nmaps0="8"; # for M81-group
 #  -- loops for 4.25 hr
 $rowLength0 = "360";  # arcsec
 $rowOffset0 = "39";  # arcsec
@@ -101,7 +101,7 @@ checkANT();
 command("radio");
 command("integrate -t $inttime");
 $myPID=$$;
-command("project -r -p 'Eric and Jakob' -d '2024B-S019'");
+command("project -r -p 'Koch and den Brok' -d '2024B-S019'");
 print "----- initialization done, starting script -----\n";
 #
 ################## Science Script #########################

@@ -36,8 +36,6 @@ $inttime="30";
 $inttime_sci="1.2";  # 4.5"/s mapping speed at 230 GHz
 $inttime_gain="15";
 
-# $scanSpeedOTF = "4.5";  # "/s
-
 # M82 map params
 # 12 min per half-map + 3 min on gain cals
 # 30 min for full map + gain loop
@@ -45,11 +43,11 @@ $targ0="M82 -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270";
 $nmaps0="8"; # for M81-group
 #  -- loops for 4.25 hr
 $rowLength0 = "360";  # arcsec
-$rowOffset0 = "39";  # arcsec
-$nRows0 = "10";
-$posAngle0 = "30";
+$rowOffset0 = "27.5";  # arcsec
+$nRows0 = "14";
+$posAngle0 = "150"; # 30 deg from decreasing RA orientation.
 
-$scanSpeedOTF0 = "3.2";  # "/s
+$scanSpeedOTF0 = "4.6";  # "/s
 
 
 # M81 map
@@ -68,13 +66,13 @@ $targ1="IC342 -r 03:46:34.8  -d +68:06:04 -e 2000 -v -30";
 $nmaps1="10"; # for IC342
 #  -- loops for 5 hr
 $rowLength1 = "420";  # arcsec
-$rowOffset1 = "39";  # arcsec
-$nRows1 = "11";
+$rowOffset1 = "27.5";  # arcsec
+$nRows1 = "16";
 $posAngle1 = "0";
 
 # A bit slower than (0.0825 beams per integration) that maps to 12 min
 # for half of the map.
-$scanSpeedOTF1 = "3.8";  # "/s
+$scanSpeedOTF1 = "5.6";  # "/s
 
 $cal2="0228+673"; $ncal2="6"; #for IC342
 $cal3="0359+509"; $ncal3="6"; #for IC342

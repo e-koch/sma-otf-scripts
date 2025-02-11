@@ -6,7 +6,7 @@ use POSIX;
 #
 ################## Script Header Info #####################
 #
-# Experiment Code: 2024B-S019
+# Experiment Code: TESTING
 # Experiment Revealing the resolved molecular gas across the M81 group
 # PI: Eric Koch, Jakob den Brok
 # Contact Person: Eric Koch, Jakob den Brok
@@ -40,12 +40,12 @@ $inttime_gain="15";
 # 12 min per half-map + 3 min on gain cals
 # 30 min for full map + gain loop
 $targ0="M82 -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270";
-$nmaps0="8"; # for M81-group
-#  -- loops for 4.25 hr
+$nmaps0="1"; # M82; single map test
+#  -- loops for 30 min
 $rowLength0 = "360";  # arcsec
 $rowOffset0 = "27.5";  # arcsec
 $nRows0 = "14";
-$posAngle0 = "150"; # 30 deg from decreasing RA orientation.
+$posAngle0 = "-60"; # 30 deg from decreasing RA orientation.
 
 $scanSpeedOTF0 = "4.6";  # "/s
 
@@ -63,8 +63,8 @@ $cal1="0841+708"; $ncal1="6"; #for M82
 # 12 min per half-map + 3 min on gain cals
 # 30 min for full map + gain loop
 $targ1="IC342 -r 03:46:34.8  -d +68:06:04 -e 2000 -v -30";
-$nmaps1="10"; # for IC342
-#  -- loops for 5 hr
+$nmaps1="1"; # for IC342; single map test
+#  -- loops for 30 min (one map)
 $rowLength1 = "420";  # arcsec
 $rowOffset1 = "27.5";  # arcsec
 $nRows1 = "16";

@@ -36,18 +36,22 @@ $inttime="30";
 $inttime_sci="1.2";  # 4.5"/s mapping speed at 230 GHz
 $inttime_gain="15";
 
+
+# M81 group targets are up for ~9 h.
+# Interleaved maps are tuned to take ~30 min per map, incl. gains.
+
 # M82 map params
 # 12 min per half-map + 3 min on gain cals
 # 30 min for full map + gain loop
 $targ0="M82 -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270";
-$nmaps0="8"; # for M81-group
-#  -- loops for 4.25 hr
-$rowLength0 = "360";  # arcsec
+$nmaps0="22"; # for M81-group
+#  -- loops for up to 11 h
+$rowLength0 = "450";  # arcsec
 $rowOffset0 = "27.5";  # arcsec
-$nRows0 = "14";
-$posAngle0 = "150"; # 30 deg from decreasing RA orientation.
+$nRows0 = "16";
+$posAngle0 = "30"; # 30 deg from decreasing RA orientation.
 
-$scanSpeedOTF0 = "4.6";  # "/s
+$scanSpeedOTF0 = "5.3";  # "/s
 
 
 # M81 map
@@ -59,29 +63,10 @@ $cal0="0958+655"; $ncal0="6"; #for M82
 $cal1="0841+708"; $ncal1="6"; #for M82
 
 
-# IC342 params
-# 12 min per half-map + 3 min on gain cals
-# 30 min for full map + gain loop
-$targ1="IC342 -r 03:46:34.8  -d +68:06:04 -e 2000 -v -30";
-$nmaps1="10"; # for IC342
-#  -- loops for 5 hr
-$rowLength1 = "420";  # arcsec
-$rowOffset1 = "27.5";  # arcsec
-$nRows1 = "16";
-$posAngle1 = "0";
-
-# A bit slower than (0.0825 beams per integration) that maps to 12 min
-# for half of the map.
-$scanSpeedOTF1 = "5.6";  # "/s
-
-$cal2="0228+673"; $ncal2="6"; #for IC342
-$cal3="0359+509"; $ncal3="6"; #for IC342
-
 $flux0="Uranus"; $nflux0="20";
 $flux1="0319+415"; $nflux1="20";
 $flux2="mwc349a"; $nflux2="20";
 $flux3="Ceres"; $nflux3="20";
-$timeflux="Ceres";$ntimeflux="10";$timeforflux="14.0";
 
 $bpass0="0319+415"; $nbpass0="60";
 $bpass1="3c279"; $nbpass1="60";
@@ -113,16 +98,9 @@ if(!$restart){
   #&DoFlux(flux1,nflux1);
 }
 
-print "----- IC342 science target observe loop -----\n";
-# -- loops for 5 hr
-observeTargetLoopOTFInterleave($cal2,$inttime_gain,
-                     $cal3,$inttime_gain,
-                     $targ1,$inttime_sci,
-                     $nmaps1,$rowLength1,$rowOffset1,$nRows1,$posAngle1,
-                     $scanSpeedOTF1);
 
-print "----- M81-group science target observe loop -----\n";
-# -- loops for 4 hr
+print "----- M82  science target observe loop -----\n";
+# -- loops for up to 11 hr
 observeTargetLoopOTFInterleave($cal0,$inttime_gain,
                      $cal1,$inttime_gain,
                      $targ0,$inttime_sci,$nmaps0,

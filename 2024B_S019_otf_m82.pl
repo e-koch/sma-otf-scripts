@@ -297,7 +297,11 @@ sub observeTargetLoopOTF {
 
         if ($loopCount % $nIterPoint == 0) {
             # For M81 group, default to pointing on 0958+655 since it's currently ~2 Jy
+            print "Running ipoint\n";
             ipointRun($cal0);
+        }
+        else {
+            print "Skipping ipoint\n";
         }
 
         $loopCount++;
@@ -405,7 +409,11 @@ sub observeTargetLoopOTFInterleave {
 
         if ($loopCount % $nIterPoint == 0) {
             # For M81 group, default to pointing on 0958+655 since it's currently ~2 Jy
+            print "Running ipoint\n";
             ipointRun($cal0);
+        }
+        else {
+            print "Skipping ipoint\n";
         }
 
         $loopCount++;

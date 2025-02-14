@@ -33,7 +33,7 @@ use POSIX;
 ################## Source, Calibrator and Limits ##########
 #
 $inttime="30";
-$inttime_sci="1.2";  # 4.5"/s mapping speed at 230 GHz
+$inttime_sci="1.2";
 $inttime_gain="15";
 
 
@@ -63,14 +63,16 @@ $cal0="0958+655"; $ncal0="6"; #for M82
 $cal1="0841+708"; $ncal1="6"; #for M82
 
 
-$flux0="Uranus"; $nflux0="20";
-$flux1="0319+415"; $nflux1="20";
-$flux2="mwc349a"; $nflux2="20";
-$flux3="Ceres"; $nflux3="20";
+$flux0="Uranus"; $nflux0="10";
+$flux1="Pallas"; $nflux1="10";
+$flux2="mwc349a"; $nflux2="10";
+$flux3="Vesta"; $nflux3="10";
 
 $bpass0="0319+415"; $nbpass0="60";
 $bpass1="3c279"; $nbpass1="60";
 
+# Do final pointing on 3c273 as 0958+655 will be below the el limit
+$ptgcal_final='3c273';
 
 $MINEL_TARG = 17; $MAXEL_TARG = 83;
 $MINEL_GAIN = 17; $MAXEL_GAIN = 83;
@@ -105,7 +107,7 @@ observeTargetLoopOTFInterleave($cal0,$inttime_gain,
                      $cal1,$inttime_gain,
                      $targ0,$inttime_sci,$nmaps0,
                      $rowLength0,$rowOffset0,$nRows0,$posAngle0,
-                     $scanSpeedOTF);
+                     $scanSpeedOTF0);
 
 print "----- final flux and bandpass calibration -----\n";
   &DoFlux(flux0,nflux0);
@@ -116,6 +118,40 @@ print "----- final flux and bandpass calibration -----\n";
 print "----- Congratulations!  This is the end of the script.  -----\n";}
 #
 ################## File End ###############################
+
+
+# ipointRun($souString, $intLength)
+#
+# Perform an ipoint observation of the source $souString for $intLength seconds.
+#
+# $souString should be a string identifying the source to observe, e.g. "M82".
+#
+# $intLength is the length of the observation in seconds.  If not specified, a
+# default value of 5 seconds is used.
+sub ipointRun {
+    $souString = $_[0];
+    $intLength = $_[1] | 10;
+
+    $targel=checkEl($souString);
+    if($targel < $MINEL_GAIN)
+		{
+            print "Pointing elevation for $souString is $targel below min elevation limit of $MINEL_GAIN.  Skipping observation.\n";
+            return 1;
+        }
+    if($targel > $MAXEL_GAIN)
+		{
+            print "Pointing elevation for $souString is $targel below min elevation limit of $MINEL_GAIN.  Skipping observation.\n";
+            return 1;
+        }
+
+    command("observe -s $souString -R 0 -D 0 -v 0 -e 2000 -t gain");
+    command("integrate -s 0 -t 5");
+    command("tsys");
+
+    # Same as used for normal automated ipoint cmds
+    command("ipoint -i $intLength -r 3 -8 -c 2.5 -w -n -Q -s")
+
+}
 
 # observeGainTarget($souString, $nInt, $intLength, $doTsys)
 #
@@ -129,6 +165,13 @@ sub observeGainTarget {
     $nInt = $_[1];
     $intLength = $_[2];
     $doTsys = $_[3];
+
+    $targel=checkEl($souString);
+    if($targel < $MINEL_GAIN)
+		{
+            print "Target elevation for $souString is $targel below min elevation limit of $MINEL_GAIN.  Skipping observation.\n";
+            return 1;
+        }
 
     command("observe -s $souString -R 0 -D 0 -v 0 -e 2000 -t gain");
     command("integrate -s 0 -t $intLength");
@@ -158,6 +201,13 @@ sub observeTargetOTF{
     $posAngle = $_[5] || 0.0;
     $startRow = $_[6] || 0.0;
     $scanSpeed = $_[7] || 4.5;
+
+    $targel=checkEl($souString);
+    if($targel < $MINEL_TARG)
+		{
+            print "Target elevation for $souString is $targel below min elevation limit of $MINEL_GAIN.  Skipping observation.\n";
+            return 1;
+        }
 
     command("observe -s $souString");
     command("integrate -t $intLength");
@@ -226,6 +276,7 @@ sub observeTargetLoopOTF {
     $rowOffsetOTF = $_[8];
     $nRowsOTF = $_[9];
     $posAngleOTF = $_[10] || "0.0";
+    $nIterPoint = $_[11] || 6;
 
     my $loopCount = 0;
     while ($loopCount < $numLoopsOTF) {
@@ -243,7 +294,14 @@ sub observeTargetLoopOTF {
         observeTargetOTF($scienceSouString, $intLengthTarget,
                          $rowLengthOTF, $rowOffsetOTF,
                          $nRowsOTF, $posAngleOTF );
+
+        if ($loopCount % $nIterPoint == 0) {
+            # For M81 group, default to pointing on 0958+655 since it's currently ~2 Jy
+            ipointRun($cal0);
+        }
+
         $loopCount++;
+
     }
 
     print "########################################\n";
@@ -257,6 +315,12 @@ sub observeTargetLoopOTF {
     print "########################################\n";
     observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
     observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
+
+    print "########################################\n";
+    print "Finishing observeTargetLoopOTF with final ipoint\n";
+    print "########################################\n";
+    # For M81 group, default to final pointing on 3c273
+    ipointRun($ptgcal_final);
 
     return 0;
 }
@@ -285,6 +349,7 @@ sub observeTargetLoopOTFInterleave {
     $nRowsOTF = $_[9];
     $posAngleOTF = $_[10] || "0.0";  # default to 0.0
     $scanSpeedOTF = $_[11] || "4.5";  # default to 4.5"/s
+    $nIterPoint = $_[12] || 3;  # Run an ipoint every N iterations (3 based on ~30 min loops)
 
     # Splits mapping into 2 interleaved parts.
     # Useful for large maps that do not find within a 15 min gain loop
@@ -338,6 +403,11 @@ sub observeTargetLoopOTFInterleave {
                          $scanSpeedOTF);
 
 
+        if ($loopCount % $nIterPoint == 0) {
+            # For M81 group, default to pointing on 0958+655 since it's currently ~2 Jy
+            ipointRun($cal0);
+        }
+
         $loopCount++;
     }
 
@@ -352,6 +422,13 @@ sub observeTargetLoopOTFInterleave {
     print "########################################\n";
     observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
     observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
+
+
+    print "########################################\n";
+    print "Finishing observeTargetLoopOTFInterleave with final ipoint\n";
+    print "########################################\n";
+    # For M81 group, default to final pointing on 3c273
+    ipointRun($ptgcal_final);
 
     return 0;
 }

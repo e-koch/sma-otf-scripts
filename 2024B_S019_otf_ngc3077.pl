@@ -22,8 +22,8 @@ use POSIX;
 #
 ################## Priming ################################
 #
-# observe -s M82 -r 09:55:52.7  -d +69:40:46 -e 2000 -v 270
-# dopplerTrack -S M82 -r 230.538 -u -s1 -f 0.0 -h 10 -R h -r 230.538 -u -s1 -f 0.0 -h 10
+# observe -s NGC3077 -r 10:03:34.2  -d +68:42:47.5 -e 2000 -v 15
+# dopplerTrack -S NGC3077 -r 230.538 -u -s1 -f 0.0 -h 10 -R h -r 230.538 -u -s1 -f 0.0 -h 10
 #
 ################## Pointing ###############################
 #
@@ -33,34 +33,29 @@ use POSIX;
 ################## Source, Calibrator and Limits ##########
 #
 $inttime="30";
-$inttime_sci="1.2";
+$inttime_sci="1.4";
 $inttime_gain="15";
 
 
 # M81 group targets are up for ~9 h.
 # Interleaved maps are tuned to take ~30 min per map, incl. gains.
 
-# M82 map params
+# NGC3077 map params
 # 12 min per half-map + 3 min on gain cals
 # 30 min for full map + gain loop
-$targ0="M82 -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270";
+$targ0="NGC3077 -r 10:03:34.2  -d +68:42:47.5 -e 2000 -v 15";
 $nmaps0="22"; # for M81-group
 #  -- loops for up to 11 h
-$rowLength0 = "450";  # arcsec
+$rowLength0 = "480";  # arcsec
 $rowOffset0 = "27.5";  # arcsec
-$nRows0 = "16";
-$posAngle0 = "30"; # 30 deg from decreasing RA orientation.
+$nRows0 = "14";
+$posAngle0 = "0"; # 30 deg from decreasing RA orientation.
 
-$scanSpeedOTF0 = "5.3";  # "/s
+$scanSpeedOTF0 = "4.9";  # "/s
 
 
-# M81 map
-# NGC2976 map
-# NGC3077 map
-# HI tail map
-
-$cal0="0958+655"; $ncal0="6"; #for M82
-$cal1="0841+708"; $ncal1="6"; #for M82
+$cal0="0958+655"; $ncal0="6"; #for NGC3077
+$cal1="0841+708"; $ncal1="6"; #for NGC3077
 
 
 $flux0="Uranus"; $nflux0="10";
@@ -101,7 +96,7 @@ if(!$restart){
 }
 
 
-print "----- M82  science target observe loop -----\n";
+print "----- NGC3077  science target observe loop -----\n";
 # -- loops for up to 11 hr
 observeTargetLoopOTFInterleave($cal0,$inttime_gain,
                      $cal1,$inttime_gain,
@@ -124,7 +119,7 @@ print "----- Congratulations!  This is the end of the script.  -----\n";}
 #
 # Perform an ipoint observation of the source $souString for $intLength seconds.
 #
-# $souString should be a string identifying the source to observe, e.g. "M82".
+# $souString should be a string identifying the source to observe, e.g. "NGC3077".
 #
 # $intLength is the length of the observation in seconds.  If not specified, a
 # default value of 5 seconds is used.
@@ -187,7 +182,7 @@ sub observeGainTarget {
 # Perform an OTF observation of the source $souString for $intLength seconds.
 #
 # $souString should be a string identifying the source to observe, e.g.
-# "M82".
+# "NGC3077".
 #
 # $intLength should be the length of the observation in seconds.
 #
@@ -217,7 +212,7 @@ sub observeTargetOTF{
     command("integrate -t $intLength -w");
     command("otf -v $scanSpeed -l $rowLength -y $rowOffset -n $nRows -p $posAngle -i $startRow -e -w");
 
-    #command("otf -v 3 -l 120 -y 10 -n 13 -e -w"); # for M82 initial test
+    #command("otf -v 3 -l 120 -y 10 -n 13 -e -w"); # for NGC3077 initial test
     #command("otf -v 6.5 -l 420 -y 39 -n 9 -e -w"); # for IC342
 
     #     ```

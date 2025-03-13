@@ -198,7 +198,6 @@ sub observeTargetOTF{
 
     $targel=checkEl($souString);
     if($targel < $MINEL_TARG)
-		{
             print "Target elevation for $souString is $targel below min elevation limit of $MINEL_GAIN.  Skipping observation.\n";
             return 1;
         }

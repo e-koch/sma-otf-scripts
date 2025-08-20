@@ -44,6 +44,13 @@ $inttime_gain="15";
 # 12 min per half-map + 3 min on gain cals
 # 30 min for full map + gain loop
 $targ0="M82 -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270";
+
+my @mainTarg = (
+    "M82_a -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270",
+    "M82_b -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270"
+);
+
+
 $nmaps0="25"; # for M81-group
 #  -- loops for up to 11 h
 $rowLength0 = "450";  # arcsec
@@ -108,12 +115,20 @@ if(!$restart){
 
 print "----- M82  science target observe loop -----\n";
 # -- loops for up to 11 hr
-observeTargetLoopOTFInterleave($cal0,$inttime_gain,
+# observeTargetLoopOTFInterleave($cal0,$inttime_gain,
+#                      $cal1,$inttime_gain,
+#                      $targ0,$inttime_sci,$nmaps0,
+#                      $rowLength0,$rowOffset0,$nRows0,$posAngle0,
+#                      $scanSpeedOTF0,
+#                      $opt_figure);
+
+observeTargetLoopOTFInterleaveMulti($cal0,$inttime_gain,
                      $cal1,$inttime_gain,
-                     $targ0,$inttime_sci,$nmaps0,
+                     \@mainTarg,$inttime_sci,
                      $rowLength0,$rowOffset0,$nRows0,$posAngle0,
                      $scanSpeedOTF0,
                      $opt_figure);
+
 
 print "----- final flux and bandpass calibration -----\n";
 &DoFlux(flux0,nflux0);
@@ -124,7 +139,6 @@ print "----- final flux and bandpass calibration -----\n";
 print "----- Congratulations!  This is the end of the script.  -----\n";}
 #
 ################## File End ###############################
-
 
 # ipointRun($souString, $intLength)
 #
@@ -498,3 +512,116 @@ sub observeTargetLoopOTFInterleave {
 }
 
 
+# observeTargetLoopOTFInterleaveMulti(
+#   $gainSouString0, $intLengthGain0,
+#   $gainSouString1, $intLengthGain1,
+#   \@scienceSouStringList, $intLengthTarget,
+#   $rowLengthOTF, $rowOffsetOTF, $nRowsOTF, $posAngleOTF,
+#   $scanSpeedOTF, $nIterPoint, $figureFlag)
+#
+# Iterates through a list of science targets, performing interleaved OTF mapping for each.
+sub observeTargetLoopOTFInterleaveMulti {
+    my (
+        $gainSouString0, $intLengthGain0,
+        $gainSouString1, $intLengthGain1,
+        $scienceSouStringListRef, $intLengthTarget,
+        $rowLengthOTF, $rowOffsetOTF, $nRowsOTF, $posAngleOTF,
+        $scanSpeedOTF, $nIterPoint, $figureFlag
+    ) = @_;
+    $posAngleOTF = $posAngleOTF || "0.0";
+    $scanSpeedOTF = $scanSpeedOTF || "4.5";
+    $nIterPoint = $nIterPoint || 3;
+    $figureFlag = $figureFlag || 0;
+
+    my @scienceSouStringList = @{$scienceSouStringListRef};
+
+    # Only support -f (figure) flag for resuming from last completed target
+    my $resume_target = 0;
+    if ($figureFlag) {
+        print "Figure flag detected: attempting to resume from last completed target.\n";
+        if (open(my $fh, '<', 'restartfile.txt')) {
+            while (my $line = <$fh>) {
+                if ($line =~ /last_target=(\d+)/) {
+                    $resume_target = $1;
+                    print "Resuming from target $resume_target.\n";
+                }
+            }
+            close($fh);
+        }
+    }
+
+    for (my $targetIdx = $resume_target; $targetIdx < scalar(@scienceSouStringList); $targetIdx++) {
+        my $scienceSouString = $scienceSouStringList[$targetIdx];
+        print "########################################\n";
+        print "########################################\n";
+        print "Starting OTF interleaved mapping for target $targetIdx: $scienceSouString\n";
+        print "Gain cals are $gainSouString0 and $gainSouString1\n";
+        print "########################################\n";
+        print "########################################\n";
+
+        observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
+        observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
+
+        # Interleaved mapping for this target
+        my $rowOffsetTwice = $rowOffsetOTF * 2;
+        my $startRow1 = 0;
+        my $nRows1 = floor($nRowsOTF / 2);
+        my $startRow2 = 0.5;
+        my $nRows2 = ceil($nRowsOTF / 2);
+
+        # Start row 0.
+        observeTargetOTF($scienceSouString,
+                         $intLengthTarget,
+                         $rowLengthOTF,
+                         $rowOffsetTwice,
+                         $nRows1,
+                         $posAngleOTF ,
+                         $startRow1,
+                         $scanSpeedOTF);
+
+        observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
+        observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
+
+        # Start row 1
+        observeTargetOTF($scienceSouString,
+                         $intLengthTarget,
+                         $rowLengthOTF,
+                         $rowOffsetTwice,
+                         $nRows2,
+                         $posAngleOTF ,
+                         $startRow2,
+                         $scanSpeedOTF);
+
+        # Write to restartfile.txt.
+        # Here we consider a single target is both interleaved parts.
+        open(my $rfh, '>', 'restartfile.txt');
+        print $rfh "last_target=$targetIdx\n";
+        close($rfh);
+
+        if ($targetIdx % $nIterPoint == 0) {
+            print "Running ipoint\n";
+            ipointRun($cal0);
+        } else {
+            print "Skipping ipoint\n";
+        }
+    }
+
+    print "########################################\n";
+    print "########################################\n";
+    print "Finished OTF interleaved mapping for all targets\n";
+    print "########################################\n";
+    print "########################################\n";
+
+    print "########################################\n";
+    print "Finishing observeTargetLoopOTFInterleaveMulti with final gain scans\n";
+    print "########################################\n";
+    observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
+    observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
+
+    print "########################################\n";
+    print "Finishing observeTargetLoopOTFInterleaveMulti with final ipoint\n";
+    print "########################################\n";
+    ipointRun($cal0);
+
+    return 0;
+}

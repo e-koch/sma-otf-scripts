@@ -138,33 +138,36 @@ sub observeTargetOTF{
     # Then run the OTF cmd.
     command("otf -v $scanSpeed -l $rowLength -y $rowOffset -n $nRows -p $posAngle -i $startRow -e -w");
 
-    #command("otf -v 3 -l 120 -y 10 -n 13 -e -w"); # for M82 initial test
-    #command("otf -v 6.5 -l 420 -y 39 -n 9 -e -w"); # for IC342
+    # Usage: otf [OPTIONS]
 
-    #     ```
-    # Initiate raster scanning with the antennas.
-    # Usage: otf [OPTION...]
-    #   -a, --antenna=ARG          a comma-separated list of antennas
-    #   -v, --speed=ARG            (arcsec/s) scan speed.
-    #   -l, --length=ARG           (arcsec) scan length.
-    #   -n, --rows=ARG             number of scan rows.
-    #   -y, --step_y=ARG           (arcsec) step between rows, perpendicular to
-    #                               motion.
-    #   -x, --step_x=ARG           (arcsec) step between rows, along to motion
-    #                               (default 0.0).
-    #   -e, --equatorial           directions w.r.t. equatorial system.
-    #   -p, --position_angle=ARG   (deg) scan position angle w.r.t. 'horizontal'
-    #                               (default 0.0).
-    #   -i, --start_row=ARG        index of starting row, fractional (default
-    # 0.0).
-    #   -D, --init_delay=ARG       (sec) initial delay (default 3.0).
-    #   -d, --row_delay=ARG        (sec) delay between rows (default 2.0).
-    #   -q, --query                Query current scans remaining only.
-    #   -w, --wait                 Wait for the OTF to complete before
-    #                               returning prompt.
-    #   -T, --time                 Just print the estimated time of
-    #                             completion (in seconds) without scanning.
-    # ```
+    # Starts a synchronized on-the-fly (OTF) scan on the antennas.
+
+    # -a, --antenna=<list>         a comma-separated list of antenna numbers and
+    #                             ranges (..). E.g. '2,4..7'.
+    # -v, --speed=<arcsec/s>       scan speed.
+    # -l, --length=<arcsec>        scan length.
+    # -r, --ramp=<seconds>         ramp up time, for each row (default: 3.0).
+    # -n, --rows=<int>             number of scan rows.
+    # -y, --step_y=<arcsec>        step between rows, perpendicular to motion.
+    # -x, --step_x=<arcsec>        step between rows, along row direction
+    #                             (default: 0.0).
+    # -e, --equatorial             scan in equatorial system.
+    # -p, --position_angle=<deg>   scan position angle w.r.t. 'horizontal'
+    #                             (default: 0.0).
+    # -i, --start_row=<float>      index of starting row (default: 0.0).
+    # -D, --init_delay=<seconds>   initial delay (default: 3.0).
+    # -d, --row_delay=<seconds>    delay between rows (default: 2.0).
+    # -q, --query                  Query current scans remaining only.
+    # -w, --wait                   Wait for the OTF to complete before returning
+    #                             prompt.You may use it to wait on an ongoing
+    #                             scan as well.
+    # -b, --bell                   Ring bell when complete (use together with -w).
+    # -T, --time                   Just print the estimated time of completion (in
+    #                             seconds).
+
+    # Help options
+    # -?, --help                   Show this help message
+    # --usage                      Display brief usage message
 
     return 0;
 }

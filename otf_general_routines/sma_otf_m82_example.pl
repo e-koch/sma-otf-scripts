@@ -247,12 +247,15 @@ sub observeTargetOTF{
             return 1;
         }
 
+    print "otf -v $scanSpeed -l $rowLength -y $rowOffset -n $nRows -p $posAngle -i $startRow -e -w\n";
+
     if ($simulateMode) {
         # Estimate time for OTF scan
         my $row_time = $rowLength / $scanSpeed; # seconds per row
         my $row_delay = 2.0; # default row delay
+        my $row_ramp_delay = 3.0; # default row delay
         my $init_delay = 3.0; # default initial delay
-        my $total_time = $init_delay + ($nRows * $row_time) + (($nRows - 1) * $row_delay);
+        my $total_time = $init_delay + ($nRows * $row_time) + (($nRows) * $row_delay)  + (($nRows) * $row_ramp_delay);
         printf("[SIMULATION MODE] observeTargetOTF: Would observe %s for %d seconds, %d rows, scan speed %.2f arcsec/s. Estimated time: %.1f seconds.\n",
             $souString, $intLength, $nRows, $scanSpeed, $total_time);
         $unixTime = $unixTime + $total_time;

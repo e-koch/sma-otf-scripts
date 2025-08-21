@@ -133,6 +133,9 @@ sub observeTargetOTF{
     command("antennaWait -e 4");
 
     command("integrate -t $intLength -w");
+    # First print expected duration
+    command("otf -v $scanSpeed -l $rowLength -y $rowOffset -n $nRows -p $posAngle -i $startRow -e -T");
+    # Then run the OTF cmd.
     command("otf -v $scanSpeed -l $rowLength -y $rowOffset -n $nRows -p $posAngle -i $startRow -e -w");
 
     #command("otf -v 3 -l 120 -y 10 -n 13 -e -w"); # for M82 initial test

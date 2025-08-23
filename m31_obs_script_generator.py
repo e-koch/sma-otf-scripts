@@ -76,16 +76,24 @@ def return_otf_positionangle(this_region):
 
     pa = this_region.angle.to(u.deg)
 
-    # If >180 deg, subtract 180. No distinction by 180 deg flips
-    if pa > 180 * u.deg:
-        pa = pa - 180 * u.deg
-
     # If width>height, shift PA by -90 deg
     if this_region.width > this_region.height:
         pa = pa - 90 * u.deg
 
+    # If <0 deg, add 180
+    if pa < 0 * u.deg:
+        pa = pa + 180 * u.deg
+
+    # If >180 deg, subtract 180. No distinction by 180 deg flips
+    if pa > 180 * u.deg:
+        pa = pa - 180 * u.deg
+
+
     # To match the OTF convention, take the complement by 180 deg
-    otf_pa = 180 * u.deg - pa
+    if pa.value == 0:
+        otf_pa = 0 * u.deg
+    else:
+        otf_pa = 180 * u.deg - pa
 
     return otf_pa
 

@@ -61,7 +61,7 @@ print "\n";
 $rowLength0 = "840";  # arcsec
 $rowOffset0 = "27.5";  # arcsec
 $nRows0 = "22";
-$posAngle0 = "30"; # 30 deg from decreasing RA orientation.
+$posAngle0 = "144";
 
 $scanSpeedOTF0 = "11.45";  # "/s
 

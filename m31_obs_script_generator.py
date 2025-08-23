@@ -59,9 +59,42 @@ def region_to_sma_line(this_region, region_prefix='M31', v_M31=v_M31):
     return f'"{region_prefix}-{this_region.meta['label']} -r {ra} -d {dec} -e 2000 -v {v_M31}"'
 
 
+def return_otf_positionangle(this_region):
+    '''
+    Converts the position angle from a region to the OTF convention.
+
+    Parameters
+    ----------
+    this_region : regions.RectangleSkyRegion
+        Region to get PA for.
+
+    Returns
+    -------
+    otf_pa : astropy.units.Quantity
+    '''
+
+
+    pa = this_region.angle.to(u.deg)
+
+    # If >180 deg, subtract 180. No distinction by 180 deg flips
+    if pa > 180 * u.deg:
+        pa = pa - 180 * u.deg
+
+    # If width>height, shift PA by -90 deg
+    if this_region.width > this_region.height:
+        pa = pa - 90 * u.deg
+
+    # To match the OTF convention, take the complement by 180 deg
+    otf_pa = 180 * u.deg - pa
+
+    return otf_pa
+
+
 region_prefix = 'M31'
 
 region_dict = {"A": {}, "B": {}, "C": {}, "D": {}}
+
+all_otf_pas = []
 
 for this_region in all_regions:
 
@@ -71,6 +104,11 @@ for this_region in all_regions:
 
     region_dict[this_brick][full_name] = this_region
 
+    # Generate the OTF PA for each map
+    otf_pa = return_otf_positionangle(this_region)
+    all_otf_pas.append(otf_pa.value)
+
+all_otf_pas = np.array(all_otf_pas) * u.deg
 
 # Ensure we have the right number of maps per brick
 assert len(region_dict["A"]) == 5
@@ -79,10 +117,10 @@ assert len(region_dict["D"]) == 5
 assert len(region_dict["B"]) == 6
 assert len(region_dict["C"]) == 6
 
-# Generate the lines
-# sma_lines = []
-# for this_region in all_regions:
-#     print(region_to_sma_line(this_region))
+
+# Sanity check: all OTF PAs should be the same
+assert np.allclose(all_otf_pas, all_otf_pas[0])
+print(f"OTF PAs are all the same at: {all_otf_pas[0]}")
 
 # A and D have 5 maps and 7 total tracks
 # B and C have 6 maps and 8 total tracks

@@ -1,0 +1,24 @@
+#CRTFv0
+global coord=J2000
+rotbox[[10.186364deg, 40.615841deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-D-Row-1-Col-1', color=c, linewidth=2
+rotbox[[10.033782deg, 40.698707deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-D-Row-2-Col-1', color=c, linewidth=2
+rotbox[[10.436376deg, 40.757487deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-D-Row-1-Col-2', color=c, linewidth=2
+rotbox[[10.283779deg, 40.840685deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-D-Row-2-Col-2', color=c, linewidth=2
+rotbox[[10.130797deg, 40.923680deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-D-Row-3-Col-2', color=c, linewidth=2
+rotbox[[10.611200deg, 40.940380deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-C-Row-1-Col-3', color=r, linewidth=2
+rotbox[[10.458399deg, 41.023809deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-C-Row-2-Col-3', color=r, linewidth=2
+rotbox[[10.305210deg, 41.107035deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-C-Row-3-Col-3', color=r, linewidth=2
+rotbox[[10.786996deg, 41.123005deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-C-Row-1-Col-4', color=r, linewidth=2
+rotbox[[10.633993deg, 41.206668deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-C-Row-2-Col-4', color=r, linewidth=2
+rotbox[[10.480598deg, 41.290127deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-C-Row-3-Col-4', color=r, linewidth=2
+rotbox[[10.963774deg, 41.305362deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-B-Row-1-Col-5', color=g, linewidth=2
+rotbox[[10.810570deg, 41.389258deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-B-Row-2-Col-5', color=g, linewidth=2
+rotbox[[10.656971deg, 41.472952deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-B-Row-3-Col-5', color=g, linewidth=2
+rotbox[[11.141545deg, 41.487445deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-B-Row-1-Col-6', color=g, linewidth=2
+rotbox[[10.988141deg, 41.571577deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-B-Row-2-Col-6', color=g, linewidth=2
+rotbox[[10.834339deg, 41.655506deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-B-Row-3-Col-6', color=g, linewidth=2
+rotbox[[11.320318deg, 41.669253deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-A-Row-1-Col-7', color=b, linewidth=2
+rotbox[[11.166717deg, 41.753622deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-A-Row-2-Col-7', color=b, linewidth=2
+rotbox[[11.012713deg, 41.837788deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-A-Row-3-Col-7', color=b, linewidth=2
+rotbox[[11.423257deg, 41.893109deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-A-Row-1-Col-8', color=b, linewidth=2
+rotbox[[11.269256deg, 41.977616deg], [0.233333deg, 0.150000deg], 306.000000deg], label='Brick-A-Row-2-Col-8', color=b, linewidth=2

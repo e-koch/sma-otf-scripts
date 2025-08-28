@@ -18,11 +18,28 @@ use POSIX;
 #
 ############## SPECIAL INSTRUCTIONS ################
 #
-# none
+# See the README for details on these custom observing scripts!
+# README: https://docs.google.com/document/d/1B1pvD3elZDKuLlVj8Rohqo2O7C9w_2TXmPG6Em1PhGY/edit?usp=sharing
+#
+# Key points:
+# 1. The custom OTF observing commands are all contained in this script.
+# 2. The science targets will be observed in the order from @mainTarg.
+#    This order is printed to terminal whenever the script is run.
+# 3. The OTF map parameters are the same for all M31 OTF maps. Only the center location changes.
+# 4. Each map name will be observed "twice", interleaved with gain calibrator scans in the middle.
+#   This is because each otf command observes every 2nd row:
+#   the first otf call covers even rows; the second otf call covers odd rows.
+# 5. Hand-over at 2nd shift should use the -f flag! However, each iteration is the pair
+#    of odd and even rows. This may lead to reobserving the first half of the map twice on
+#    restart. THAT IS OK!
+# 6. A single gain calibrator is observed. The primary is 0136+478. If it's elevation is too
+#    low, then 0013+408 will be observed. Otherwise 0036+478 is skipped.
+# 7. ipoints are automatically run every 5th iteration (so ~2.5 h intervals). The standard
+#    bp and flux cal commands will use the normal automated ipoint routines.
 #
 ################## Priming ################################
 #
-# observe -s M31-Brick-A-Row-1-Col-7 -r 11:19:13.1448 -d 41:40:09.3108 -e 2000 -v -296
+# observe -s M31-Brick-A-Row-1-Col-7 -r 0:45:16.87632 -d 41:40:09.3108 -e 2000 -v -296
 # dopplerTrack -S M31-Brick-A-Row-1-Col-7 -r 230.538 -u -s1 -f 0.0 -h 10 -R h -r 230.538 -u -s1 -f 0.0 -h 10
 #
 ################## Pointing ###############################
@@ -74,7 +91,7 @@ print "\n";
 $rowLength0 = "840";  # arcsec
 $rowOffset0 = "27.5";  # arcsec
 $nRows0 = "22";
-$posAngle0 = "144";
+$posAngle0 = "54";
 
 $scanSpeedOTF0 = "11.45";  # "/s
 

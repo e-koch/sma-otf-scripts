@@ -13,12 +13,12 @@ use POSIX;
 # Email  : jhk@cis.rit.edu
 # Office :
 # Home   :
-# Array  : subcompact
+# Array  : subcompact / compact
 #
 #
 ############## SPECIAL INSTRUCTIONS ################
 #
-# none
+# Start script 19:10 LST (around 06:30 UTC at the beginning of September)
 #
 ################## Priming ################################
 #
@@ -45,7 +45,7 @@ $inttime_gain="10";
 # 42 min for half map + gain loop
 
 # Upper half map (1150 x 440, with 27.5" spacing)
-$targ0="NGC7293 -r 22:29:38.545 -d -20:50:13.75 -D 220.0 -e 2000 -v '-23'";
+$targ0="NGC7293 -r 22:29:38.545 -d -20:50:13.75 -D 220.0 -e 2000 -v -23";
 
 $rowLength0 = "1150";  # arcsec
 $rowOffset0 = "27.5";  # arcsec
@@ -53,14 +53,16 @@ $nRows0 = "16";
 $posAngle0 = "0"; # 30 deg from decreasing RA orientation.
 $scanSpeedOTF0 = "9.0";  # "/s
 
-$nmaps0="5"; # numper of passes over track -- loops for up to 3.62h
+$nmaps0="7"; # number of passes over track -- loops for up to 4h
 
 $cal0="2158-150"; $ncal0="9"; #for NGC7293
-$cal1="2258-279"; $ncal1="9"; #for NGC7293
+$cal1="2246-121"; $ncal1="9"; #for NGC7293
+$cal2="2258-279"; $ncal2="9"; #for NGC7293 -- too low at start
 
-$flux0="Uranus"; $nflux0="10";
-$flux1="Callisto"; $nflux1="10";
-#$flux2="mwc349a"; $nflux2="10";
+
+$flux0="mwc349a"; $nflux0="10";
+$flux1="Uranus"; $nflux1="10";
+$flux2="Callisto"; $nflux2="10";
 #$flux3="Vesta"; $nflux3="10";
 
 $bpass0="3c454.3"; $nbpass0="60";
@@ -97,7 +99,7 @@ if(!$restart){
 
 
 print "----- NGC7293 science target observe loop -----\n";
-# -- loops for up to 11 hr
+# -- loops for up to 3.62 hr
 observeTargetLoopOTFInterleave($cal0,$inttime_gain,
                      $cal1,$inttime_gain,
                      $targ0,$inttime_sci,$nmaps0,
@@ -105,8 +107,8 @@ observeTargetLoopOTFInterleave($cal0,$inttime_gain,
                      $scanSpeedOTF0);
 
 print "----- final flux and bandpass calibration -----\n";
-  &DoFlux(flux0,nflux0);
   &DoFlux(flux1,nflux1);
+  #&DoFlux(flux2,nflux2);
   &DoPass(bpass1,nbpass1);
 
 print "----- Congratulations!  This is the end of the script.  -----\n";}
@@ -310,7 +312,7 @@ sub observeTargetLoopOTF {
         $posAngleOTF, $nIterPoint, $figureFlag
     ) = @_;
     $posAngleOTF = $posAngleOTF || "0.0";
-    $nIterPoint = $nIterPoint || 6;
+    $nIterPoint = $nIterPoint || 4;
     $figureFlag = $figureFlag || 0;
 
     # Only support -f (figure) flag for resuming from last completed loop
@@ -446,6 +448,14 @@ sub observeTargetLoopOTFInterleave {
                          $posAngleOTF ,
                          $startRow1,
                          $scanSpeedOTF);
+                         
+                         
+	# AK Switch cal source in loop 2
+	if ($loopCount == 1) {
+            print "Switching secondary gain calibrator\n";
+            $gainSouString1 = $cal2;
+            $ncal1 = $ncal2;
+        }
 
         observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
         observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);

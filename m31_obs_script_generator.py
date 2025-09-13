@@ -133,7 +133,7 @@ print(f"OTF PAs are all the same at: {all_otf_pas[0]}")
 # A and D have 5 maps and 7 total tracks
 # B and C have 6 maps and 8 total tracks
 
-for this_brick in region_dict:
+for this_brick in ["A", "B", "C", "D"]:
 
     print(f"Generating scripts for {this_brick}")
 
@@ -151,6 +151,8 @@ for this_brick in region_dict:
     print(f"Number of tracks: {ntracks}")
 
     map_list = np.array([name for name in region_dict[this_brick]])
+
+    print(f"Map list: {map_list}")
 
     for ii in range(1, ntracks+1):
         print(f"Generating script for track {ii}")

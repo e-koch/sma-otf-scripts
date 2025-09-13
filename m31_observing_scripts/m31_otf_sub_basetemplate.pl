@@ -11,7 +11,7 @@ use POSIX;
 # Experiment Title:  A complete CO(2-1) Map of M31 with SMA OTF mapping
 # PI: Eric Koch
 # Contact Person: Eric Koch
-# Email  : koch.eric.w@gmail.com
+# Email  : eric.koch@cfa.harvard.edu; koch.eric.w@gmail.com
 # Office :
 # Home   :
 # Array  : subcompact
@@ -30,9 +30,11 @@ use POSIX;
 # 4. Each map name will be observed "twice", interleaved with gain calibrator scans in the middle.
 #   This is because each otf command observes every 2nd row:
 #   the first otf call covers even rows; the second otf call covers odd rows.
-# 5. Hand-over at 2nd shift should use the -f flag! However, each iteration is the pair
-#    of odd and even rows. This may lead to reobserving the first half of the map twice on
-#    restart. THAT IS OK!
+# 5. Hand-over at 2nd shift can use the -r flag. Before restarting:
+#    - Open the observing script and comment out any maps that have completed in the @mainTarg list.
+#      If a map was partially completed, do not comment out that line even if a part gets reobserved.
+#    - Each iteration is the pair of odd and even rows. This may lead to reobserving the first half of
+#     the map twice on restart. THAT IS OK!
 # 6. A single gain calibrator is observed. The primary is 0136+478. If it's elevation is too
 #    low, then 0013+408 will be observed. Otherwise 0036+478 is skipped.
 # 7. ipoints are automatically run every 5th iteration (so ~2.5 h intervals). The standard

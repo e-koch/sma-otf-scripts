@@ -203,9 +203,10 @@ sub observeTargetLoopOTF {
         $nIterPoint, $figureFlag
     ) = @_;
     $posAngleOTF = $posAngleOTF || "0.0";
+    $numLoopsOTF = $numLoopsOTF || 1;
     $nIterPoint = $nIterPoint || 6;
     $figureFlag = $figureFlag || 0;
-
+        $numOTFperLoop,
     # Only support -f (figure) flag for resuming from last completed loop
     my $resume_loop = 0;
     if ($figureFlag) {
@@ -242,7 +243,11 @@ sub observeTargetLoopOTF {
 
         my $mapsPerLoopCounter = 0;
         while ($mapsPerLoopCounter < $numOTFperLoop) {
-            print "Starting OTF map $mapsPerLoopCounter of $numOTFperLoop\n";
+            # Only print when $numOTFperLoop > 1
+            if ($numOTFperLoop > 1) {
+                print "Starting OTF map $mapsPerLoopCounter of $numOTFperLoop\n";
+            }
+
             observeTargetOTF($scienceSouString, $intLengthTarget,
                             $rowLengthOTF, $rowOffsetOTF,
                             $nRowsOTF, $posAngleOTF );

@@ -177,7 +177,10 @@ sub observeTargetOTF{
 #                      $scienceSouString, $intLengthTarget,
 #                      $numLoopsOTF, $rowLengthOTF,
 #                      $rowOffsetOTF, $nRowsOTF,
-#                      $posAngleOTF)
+#                      $posAngleOTF,
+#                      $numOTFperLoop,
+#                      $nIterPoint,
+#                      $figureFlag)
 #
 # Perform a gain calibration observation of the sources $gainSouString0 and
 # $gainSouString1 for $intLengthGain0 and $intLengthGain1 seconds,
@@ -195,7 +198,9 @@ sub observeTargetLoopOTF {
         $scienceSouString, $intLengthTarget,
         $numLoopsOTF, $rowLengthOTF,
         $rowOffsetOTF, $nRowsOTF,
-        $posAngleOTF, $nIterPoint, $figureFlag
+        $posAngleOTF,
+        $numOTFperLoop,
+        $nIterPoint, $figureFlag
     ) = @_;
     $posAngleOTF = $posAngleOTF || "0.0";
     $nIterPoint = $nIterPoint || 6;
@@ -216,6 +221,12 @@ sub observeTargetLoopOTF {
         }
     }
 
+    # Print the total number of maps that will be run:
+    my $totalMaps = $numLoopsOTF * $numOTFperLoop;
+    print "Total number of maps to run: $totalMaps\n";
+    print "Number of maps per loop: $numOTFperLoop\n";
+    print "Number of loops: $numLoopsOTF\n";
+
     my $loopCount = $resume_loop;
     while ($loopCount < $numLoopsOTF) {
         print "########################################\n";
@@ -228,9 +239,16 @@ sub observeTargetLoopOTF {
 
         observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
         observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
-        observeTargetOTF($scienceSouString, $intLengthTarget,
-                         $rowLengthOTF, $rowOffsetOTF,
-                         $nRowsOTF, $posAngleOTF );
+
+        my $mapsPerLoopCounter = 0;
+        while ($mapsPerLoopCounter < $numOTFperLoop) {
+            print "Starting OTF map $mapsPerLoopCounter of $numOTFperLoop\n";
+            observeTargetOTF($scienceSouString, $intLengthTarget,
+                            $rowLengthOTF, $rowOffsetOTF,
+                            $nRowsOTF, $posAngleOTF );
+
+            $mapsPerLoopCounter++;
+        }
 
         # Write to restartfile.txt.
         writefile($loopCount, $i, 0, $numLoopsOTF);

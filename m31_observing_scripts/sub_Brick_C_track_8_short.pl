@@ -73,6 +73,7 @@ my @mainTarg = (
   "M31-Brick-C-Row-3-Col-3 -r 0:41:13.2504 -d 41:06:25.326 -e 2000 -v -296",
   "M31-Brick-C-Row-1-Col-4 -r 0:43:08.87904 -d 41:07:22.818 -e 2000 -v -296",
   "M31-Brick-C-Row-3-Col-3 -r 0:41:13.2504 -d 41:06:25.326 -e 2000 -v -296",
+  "M31-Brick-C-Row-1-Col-4 -r 0:43:08.87904 -d 41:07:22.818 -e 2000 -v -296",
 );
 
 print "The science loop will follow this order: \n";

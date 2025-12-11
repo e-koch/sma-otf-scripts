@@ -108,7 +108,7 @@ $flux1="uranus"; $nflux1="10";
 
 # Bandpass setup
 $bpass0="bllac"; $nbpass0="60";
-$bpass1="3c84"; $nbpass1="60";
+$bpass1="3c84"; $nbpass1="90";
 
 # Use 3c84 since it's at a higher elevation at the end of the science loop
 $finalptgcal='3c84';

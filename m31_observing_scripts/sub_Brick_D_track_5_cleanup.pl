@@ -107,8 +107,8 @@ $flux0="mwc349a"; $nflux0="10";
 $flux1="uranus"; $nflux1="10";
 
 # Bandpass setup
-$bpass0="bllac"; $nbpass0="60";
-$bpass1="3c84"; $nbpass1="90";
+$bpass0="bllac"; $nbpass0="20";
+$bpass1="3c84"; $nbpass1="80";
 
 # Use 3c84 since it's at a higher elevation at the end of the science loop
 $finalptgcal='3c84';
@@ -141,7 +141,7 @@ print "----- initialization done, starting script -----\n";
 print "Script resumed with -f flag? $opt_figure \n";
 
 
-print "----- initial flux and bandpass calibration -----\n";
+#print "----- initial flux and bandpass calibration -----\n";
 if(!$restart){
   &DoPass(bpass0,nbpass0);
   &DoFlux(flux0,nflux0);

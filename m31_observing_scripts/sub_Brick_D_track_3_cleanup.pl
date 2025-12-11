@@ -75,11 +75,6 @@ my @mainTarg = (
 "M31-Brick-D-Row-2-Col-2 -r 0:41:08.10696 -d 40:50:26.466 -e 2000 -v -296",
 "M31-Brick-D-Row-3-Col-2 -r 0:40:31.39128 -d 40:55:25.248 -e 2000 -v -296",
 "M31-Brick-D-Row-1-Col-1 -r 0:40:44.72736 -d 40:36:57.0276 -e 2000 -v -296",
-"M31-Brick-D-Row-2-Col-1 -r 0:40:08.10768 -d 40:41:55.3452 -e 2000 -v -296",
-"M31-Brick-D-Row-1-Col-2 -r 0:41:44.73024 -d 40:45:26.9532 -e 2000 -v -296",
-"M31-Brick-D-Row-2-Col-2 -r 0:41:08.10696 -d 40:50:26.466 -e 2000 -v -296",
-"M31-Brick-D-Row-3-Col-2 -r 0:40:31.39128 -d 40:55:25.248 -e 2000 -v -296",
-"M31-Brick-D-Row-1-Col-1 -r 0:40:44.72736 -d 40:36:57.0276 -e 2000 -v -296"
 );
 
 print "The science loop will follow this order: \n";
@@ -107,8 +102,8 @@ $flux0="mwc349a"; $nflux0="10";
 $flux1="uranus"; $nflux1="10";
 
 # Bandpass setup
-$bpass0="bllac"; $nbpass0="60";
-$bpass1="3c84"; $nbpass1="90";
+$bpass0="bllac"; $nbpass0="20";
+$bpass1="3c84"; $nbpass1="80";
 
 # Use 3c84 since it's at a higher elevation at the end of the science loop
 $finalptgcal='3c84';
@@ -141,7 +136,7 @@ print "----- initialization done, starting script -----\n";
 print "Script resumed with -f flag? $opt_figure \n";
 
 
-print "----- initial flux and bandpass calibration -----\n";
+#print "----- initial flux and bandpass calibration -----\n";
 if(!$restart){
   &DoPass(bpass0,nbpass0);
   &DoFlux(flux0,nflux0);

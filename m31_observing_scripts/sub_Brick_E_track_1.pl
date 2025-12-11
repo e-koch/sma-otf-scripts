@@ -52,50 +52,61 @@ use POSIX;
 ################## Source, Calibrator and Limits ##########
 #
 $inttime="30";
-$inttime_sci="0.6";
+
+# These maps are a bit smaller. We don't need the 0.6 integration times.
+$inttime_sci0="0.9";
+$inttime_sci1="1.2";
+
 $inttime_gain="15";
 
 
 # Input all science targets here.
 
-# Example:
-# my @mainTarg = (
-#     "M82_a -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270",
-#     "M82_b -r 09:55:59.7  -d +69:40:55 -e 2000 -v 270"
-# );
 
-my @mainTarg = (
-    "M31-Brick-D-Row-2-Col-1 -r 0:40:08.10768 -d 40:41:55.3452 -e 2000 -v -296",
-"M31-Brick-D-Row-1-Col-2 -r 0:41:44.73024 -d 40:45:26.9532 -e 2000 -v -296",
-"M31-Brick-D-Row-2-Col-2 -r 0:41:08.10696 -d 40:50:26.466 -e 2000 -v -296",
-"M31-Brick-D-Row-3-Col-2 -r 0:40:31.39128 -d 40:55:25.248 -e 2000 -v -296",
-"M31-Brick-D-Row-1-Col-1 -r 0:40:44.72736 -d 40:36:57.0276 -e 2000 -v -296",
-"M31-Brick-D-Row-2-Col-1 -r 0:40:08.10768 -d 40:41:55.3452 -e 2000 -v -296",
-"M31-Brick-D-Row-1-Col-2 -r 0:41:44.73024 -d 40:45:26.9532 -e 2000 -v -296",
-"M31-Brick-D-Row-2-Col-2 -r 0:41:08.10696 -d 40:50:26.466 -e 2000 -v -296",
-"M31-Brick-D-Row-3-Col-2 -r 0:40:31.39128 -d 40:55:25.248 -e 2000 -v -296",
-"M31-Brick-D-Row-1-Col-1 -r 0:40:44.72736 -d 40:36:57.0276 -e 2000 -v -296",
-"M31-Brick-D-Row-2-Col-1 -r 0:40:08.10768 -d 40:41:55.3452 -e 2000 -v -296",
-"M31-Brick-D-Row-1-Col-2 -r 0:41:44.73024 -d 40:45:26.9532 -e 2000 -v -296",
-"M31-Brick-D-Row-2-Col-2 -r 0:41:08.10696 -d 40:50:26.466 -e 2000 -v -296",
-"M31-Brick-D-Row-3-Col-2 -r 0:40:31.39128 -d 40:55:25.248 -e 2000 -v -296",
-"M31-Brick-D-Row-1-Col-1 -r 0:40:44.72736 -d 40:36:57.0276 -e 2000 -v -296"
-);
+$targ0="Brick-E-Row-0-Col-56 -r 0:44:36.156 -d 41:20:28.29 -e 2000 -v -296";
+$targ1="Brick-E-Row-0-Col-8 -r 0:45:50.26 -d 41:46:10.51 -e 2000 -v -296";
 
-print "The science loop will follow this order: \n";
-foreach my $item (@mainTarg) {
-    print "$item\n";
-}
-print "\n";
-print "\n";
 
-# OTF map parameters. Same for all M31 OTF maps (only the target location changes)
-$rowLength0 = "840";  # arcsec
+print("================================================\n");
+print "Hi Intrepid Observer! \n";
+print "This script differs from the other M31 OTF scripts. \n";
+print "This will loop over 1 larger map (split into halves as usual) but repeatedly observed \n";
+print "The 2nd map is much smaller and will run 3 maps per gain loop. \n";
+
+print "The science targets are: \n";
+print "$targ0 \n";
+print "$targ1 \n";
+print("================================================\n");
+
+print "Pausing for 5 seconds for dramatic effect.... \n";
+# command("sleep 5");
+
+
+# OTF map parameters. These are 2 custom map sizes that differ from the rest.
+
+# Smaller 27'x2.5' map between columns 5/6. Run for 11-12 maps.
+# Each map takes 14.5 min to observe. Do usual interleaving.
+$rowLength0 = "1620";  # arcsec
 $rowOffset0 = "27.5";  # arcsec
-$nRows0 = "22";
+$nRows0 = "8";
 $posAngle0 = "54";
 
-$scanSpeedOTF0 = "11.45";  # "/s
+$nmaps0 = "12";
+
+$scanSpeedOTF0 = "7.64";  # "/s
+
+# Smaller 4'x3' map near column 8. Run for 8 maps.
+# Each map takes 7 min to observe. Run 2 maps per gain loop.
+$rowLength1 = "240";  # arcsec
+$rowOffset1 = "27.5";  # arcsec
+$nRows1 = "9";
+$posAngle1 = "54";
+
+$nmaps1 = "10";
+# Each map only takes 7 min. Run 2 per gain loop.
+$numOTFperLoop1 = "2";
+
+$scanSpeedOTF1 = "5.0";  # "/s
 
 
 # Gaincal setup
@@ -108,7 +119,7 @@ $flux1="uranus"; $nflux1="10";
 
 # Bandpass setup
 $bpass0="bllac"; $nbpass0="60";
-$bpass1="3c84"; $nbpass1="90";
+$bpass1="3c84"; $nbpass1="60";
 
 # Use 3c84 since it's at a higher elevation at the end of the science loop
 $finalptgcal='3c84';
@@ -138,6 +149,7 @@ print "----- initialization done, starting script -----\n";
 #
 
 
+
 print "Script resumed with -f flag? $opt_figure \n";
 
 
@@ -150,13 +162,26 @@ if(!$restart){
 
 
 print "----- M31  science target observe loop -----\n";
-# -- loops for up to 8.5 hr
-observeTargetLoopOTFInterleaveMulti($cal0,$inttime_gain,
-                                    $cal1,$inttime_gain,
-                                    \@mainTarg,$inttime_sci,
-                                    $rowLength0,$rowOffset0,$nRows0,$posAngle0,
-                                    $scanSpeedOTF0,
-                                    $opt_figure);
+print "----- First map -----\n";
+# -- loops for 6 hr.
+observeTargetLoopOTFInterleave($cal0,$inttime_gain,
+                               $cal1,$inttime_gain,
+                               $targ0,$inttime_sci0,
+                               $nmaps0,
+                               $rowLength0,$rowOffset0,$nRows0,$posAngle0,
+                               $scanSpeedOTF0,
+                               $opt_figure);
+
+print "----- Second map -----\n";
+# -- loops for 2 hr.
+observeTargetLoopOTF($cal0,$inttime_gain,
+                     $cal1,$inttime_gain,
+                     $targ1,$inttime_sci1,
+                     $nmaps1 / $numOTFperLoop1,
+                     $rowLength1,$rowOffset1,$nRows1,$posAngle1,
+                     $scanSpeedOTF1,
+                     $numOTFperLoop1,
+                     $opt_figure);
 
 
 print "----- final flux and bandpass calibration -----\n";
@@ -341,49 +366,69 @@ sub observeTargetOTF{
 
 
 
-# observeTargetLoopOTFInterleaveMulti(
-#   $gainSouString0, $intLengthGain0,
-#   $gainSouString1, $intLengthGain1,
-#   \@scienceSouStringList, $intLengthTarget,
-#   $rowLengthOTF, $rowOffsetOTF, $nRowsOTF, $posAngleOTF,
-#   $scanSpeedOTF, $nIterPoint, $figureFlag)
+# observeTargetLoopOTF($gainSouString0, $intLengthGain0,
+#                      $gainSouString1, $intLengthGain1,
+#                      $scienceSouString, $intLengthTarget,
+#                      $numLoopsOTF, $rowLengthOTF,
+#                      $rowOffsetOTF, $nRowsOTF,
+#                      $posAngleOTF,
+#                      $scanSpeedOTF,
+#                      $numOTFperLoop,
+#                      $nIterPoint,
+#                      $figureFlag)
 #
-# Iterates through a list of science targets, performing interleaved OTF mapping for each.
-sub observeTargetLoopOTFInterleaveMulti {
+# Perform a gain calibration observation of the sources $gainSouString0 and
+# $gainSouString1 for $intLengthGain0 and $intLengthGain1 seconds,
+# respectively, with $ncal0 and $ncal1 integrations, respectively.  Then
+# perform an OTF observation of the source $scienceSouString for
+# $intLengthTarget seconds, with row length $rowLengthOTF, row offset
+# $rowOffsetOTF, and number of rows $nRowsOTF, and position angle
+# $posAngleOTF.  Repeat this loop $numLoopsOTF times.
+#
+# Returns 0 on success.
+sub observeTargetLoopOTF {
     my (
         $gainSouString0, $intLengthGain0,
         $gainSouString1, $intLengthGain1,
-        $scienceSouStringListRef, $intLengthTarget,
-        $rowLengthOTF, $rowOffsetOTF, $nRowsOTF, $posAngleOTF,
-        $scanSpeedOTF, $nIterPoint, $figureFlag
+        $scienceSouString, $intLengthTarget,
+        $numLoopsOTF, $rowLengthOTF,
+        $rowOffsetOTF, $nRowsOTF,
+        $posAngleOTF,
+        $scanSpeedOTF,
+        $numOTFperLoop,
+        $nIterPoint, $figureFlag
     ) = @_;
     $posAngleOTF = $posAngleOTF || "0.0";
-    $scanSpeedOTF = $scanSpeedOTF || "4.5";
-    $nIterPoint = $nIterPoint || 5;
+    $numLoopsOTF = $numLoopsOTF || 1;
+    $nIterPoint = $nIterPoint || 6;
     $figureFlag = $figureFlag || 0;
-
-    my @scienceSouStringList = @{$scienceSouStringListRef};
-
-    # Only support -f (figure) flag for resuming from last completed target
-    my $resume_target = 0;
+    # Only support -f (figure) flag for resuming from last completed loop
+    my $resume_loop = 0;
     if ($figureFlag) {
-        print "Figure flag detected: attempting to resume from last completed target.\n";
+        print "Figure flag detected: attempting to resume from last completed loop.\n";
         if (open(my $fh, '<', 'restartfile.txt')) {
             while (my $line = <$fh>) {
-                if ($line =~ /last_target=(\d+)/) {
-                    $resume_target = $1;
-                    print "Resuming from target $resume_target.\n";
+                if ($line =~ /last_loop=(\d+)/) {
+                    $resume_loop = $1;
+                    print "Resuming from loop $resume_loop.\n";
                 }
             }
             close($fh);
         }
     }
 
-    for (my $targetIdx = $resume_target; $targetIdx < scalar(@scienceSouStringList); $targetIdx++) {
-        my $scienceSouString = $scienceSouStringList[$targetIdx];
+    # Print the total number of maps that will be run:
+    my $totalMaps = $numLoopsOTF * $numOTFperLoop;
+    print "Total number of maps to run: $totalMaps\n";
+    print "Number of maps per loop: $numOTFperLoop\n";
+    print "Number of loops: $numLoopsOTF\n";
+
+    my $loopCount = $resume_loop;
+    while ($loopCount < $numLoopsOTF) {
         print "########################################\n";
         print "########################################\n";
-        print "Starting OTF interleaved mapping for target $targetIdx: $scienceSouString\n";
+        print "Starting OTF loop $loopCount\n";
+        print "Loop $loopCount of $numLoopsOTF for $scienceSouString\n";
         print "Gain cals are $gainSouString0 and $gainSouString1\n";
         print "########################################\n";
         print "########################################\n";
@@ -393,12 +438,121 @@ sub observeTargetLoopOTFInterleaveMulti {
             observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
         }
 
-        # Interleaved mapping for this target
-        my $rowOffsetTwice = $rowOffsetOTF * 2;
-        my $startRow1 = 0;
-        my $nRows1 = floor($nRowsOTF / 2);
-        my $startRow2 = 0.5;
-        my $nRows2 = ceil($nRowsOTF / 2);
+        my $mapsPerLoopCounter = 0;
+        while ($mapsPerLoopCounter < $numOTFperLoop) {
+            # Only print when $numOTFperLoop > 1
+            if ($numOTFperLoop > 1) {
+                print "Starting OTF map $mapsPerLoopCounter of $numOTFperLoop\n";
+            }
+
+            observeTargetOTF($scienceSouString,
+                             $intLengthTarget,
+                             $rowLengthOTF,
+                             $rowOffsetOTF,
+                             $nRowsOTF,
+                             $posAngleOTF,
+                             0.0,
+                             $scanSpeedOTF);
+
+            $mapsPerLoopCounter++;
+        }
+
+        # Write to restartfile.txt.
+        writefile($loopCount, $i, 0, $numLoopsOTF);
+
+        if ($loopCount % $nIterPoint == 0) {
+            print "Running ipoint\n";
+            ipointRun($cal0);
+        } else {
+            print "Skipping ipoint\n";
+        }
+
+        $loopCount++;
+    }
+
+    print "########################################\n";
+    print "########################################\n";
+    print "Finished OTF loops $loopCount for $scienceSouString\n";
+    print "########################################\n";
+    print "########################################\n";
+
+    print "########################################\n";
+    print "Finishing observeTargetLoopOTF with final gain scans\n";
+    print "########################################\n";
+    my $gain0_result = observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
+    if ($gain0_result == 1) {
+        observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
+    }
+
+    print "########################################\n";
+    print "Finishing observeTargetLoopOTF with final ipoint\n";
+    print "########################################\n";
+    ipointRun($ptgcal_final);
+
+    return 0;
+}
+
+
+
+# observeTargetLoopOTFInterleave($gainSouString0, $intLengthGain0,
+#                                $gainSouString1, $intLengthGain1,
+#                                $scienceSouString, $intLengthTarget,
+#                                $numLoopsOTF, $rowLengthOTF,
+#                                $rowOffsetOTF, $nRowsOTF, $posAngleOTF,
+#                                $scanSpeedOTF)
+#
+# Splits mapping into 2 interleaved parts.
+# Useful for large maps that do not find within a 15 min gain loop
+sub observeTargetLoopOTFInterleave {
+    my (
+        $gainSouString0, $intLengthGain0,
+        $gainSouString1, $intLengthGain1,
+        $scienceSouString, $intLengthTarget,
+        $numLoopsOTF, $rowLengthOTF,
+        $rowOffsetOTF, $nRowsOTF, $posAngleOTF,
+        $scanSpeedOTF, $nIterPoint, $figureFlag
+    ) = @_;
+    $posAngleOTF = $posAngleOTF || "0.0";
+    $scanSpeedOTF = $scanSpeedOTF || "4.5";
+    $nIterPoint = $nIterPoint || 3;
+    $figureFlag = $figureFlag || 0;
+
+    # Only support -f (figure) flag for resuming from last completed loop
+    my $resume_loop = 0;
+    if ($figureFlag) {
+        print "Figure flag detected: attempting to resume from last completed loop.\n";
+        if (open(my $fh, '<', 'restartfile.txt')) {
+            while (my $line = <$fh>) {
+                if ($line =~ /last_loop=(\d+)/) {
+                    $resume_loop = $1;
+                    print "Resuming from loop $resume_loop.\n";
+                }
+            }
+            close($fh);
+        }
+    }
+
+    # Splits mapping into 2 interleaved parts.
+    my $rowOffsetTwice = $rowOffsetOTF * 2;
+    my $startRow1 = 0;
+    my $nRows1 = floor($nRowsOTF / 2);
+    my $startRow2 = 0.5;
+    my $nRows2 = ceil($nRowsOTF / 2);
+
+    my $loopCount = $resume_loop;
+    while ($loopCount < $numLoopsOTF) {
+        print "########################################\n";
+        print "########################################\n";
+        print "Starting OTF interleaved loop $loopCount\n";
+        print "Loop $loopCount of $numLoopsOTF for $scienceSouString\n";
+        print "Gain cals are $gainSouString0 and $gainSouString1\n";
+        print "########################################\n";
+        print "########################################\n";
+
+        my $gain0_result = observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
+        if ($gain0_result == 1) {
+            observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
+        }
 
         # Start row 0.
         observeTargetOTF($scienceSouString,
@@ -410,12 +564,8 @@ sub observeTargetLoopOTFInterleaveMulti {
                          $startRow1,
                          $scanSpeedOTF);
 
-        # NOTE: b/c 0136+478 is ~2 Jy in Fall 2025, we only use it for gain cal.
-        # Early in the night, it has too low elevation so we instead use the secondary
-        # gain cal.
-        $gain0_result = observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
+        my $gain0_result = observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
         if ($gain0_result == 1) {
-            print "Primary gain cal unavailable. Using secondary gain cal\n";
             observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
         }
 
@@ -430,35 +580,35 @@ sub observeTargetLoopOTFInterleaveMulti {
                          $scanSpeedOTF);
 
         # Write to restartfile.txt.
-        # Here we consider a single target is both interleaved parts.
-        open(my $rfh, '>', 'restartfile.txt');
-        print $rfh "last_target=$targetIdx\n";
-        close($rfh);
+        # Here we consider a single loop is both interleaved parts.
+        writefile($loopCount, $i, 0, $numLoopsOTF);
 
-        if ($targetIdx % $nIterPoint == 0) {
+        if ($loopCount % $nIterPoint == 0) {
             print "Running ipoint\n";
             ipointRun($cal0);
         } else {
             print "Skipping ipoint\n";
         }
+
+        $loopCount++;
     }
 
     print "########################################\n";
     print "########################################\n";
-    print "Finished OTF interleaved mapping for all targets\n";
+    print "Finished OTF interleaved loops $loopCount for $scienceSouString\n";
     print "########################################\n";
     print "########################################\n";
 
     print "########################################\n";
-    print "Finishing observeTargetLoopOTFInterleaveMulti with final gain scans\n";
+    print "Finishing observeTargetLoopOTFInterleave with final gain scans\n";
     print "########################################\n";
-    observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
-    observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
+    # observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
+    # observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
 
     print "########################################\n";
-    print "Finishing observeTargetLoopOTFInterleaveMulti with final ipoint\n";
+    print "Finishing observeTargetLoopOTFInterleave with final ipoint\n";
     print "########################################\n";
-    ipointRun($finalptgcal);
+    # ipointRun($ptgcal_final);
 
     return 0;
 }

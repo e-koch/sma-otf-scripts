@@ -248,7 +248,7 @@ sub observeTargetOTF{
 
     # OTF can take up to ~15 min. To avoid hitting elevation limits during the
     # OTF scan, add a small el buffer to the minumum.
-    my $elLimitBuffer = 1.5;
+    my $elLimitBuffer = 2;
 
     if($targel < $MINEL_TARG + $elLimitBuffer)
         {
@@ -405,7 +405,7 @@ sub observeTargetLoopOTFInterleave {
         }
 
         # Start row 1
-        observeTargetOTF($scienceSouString,
+        my $resultOTF1 = observeTargetOTF($scienceSouString,
                          $intLengthTarget,
                          $rowLengthOTF,
                          $rowOffsetTwice,
@@ -415,7 +415,7 @@ sub observeTargetLoopOTFInterleave {
                          $scanSpeedOTF);
 
         # if 1 is returned, skip to end of loop
-        if ($resultOTF0 == 1) {
+        if ($resultOTF1 == 1) {
             print "Source not observable. Skipping to end of loop.\n";
             last;
         }

@@ -38,7 +38,7 @@ use POSIX;
 #
 ################## Priming ################################
 #
-# observe -s IC342 -r 03:46:48.418  -d +68:05:53.35 -e 2000 -v -30
+# observe -s IC342 -r 03:46:48.721  -d +68:05:51.224 -e 2000 -v -30
 # dopplerTrack -S IC342 -r 230.538 -u -s1 -f 0.0 -h 10 -R h -r 230.538 -u -s1 -f 0.0 -h 10
 #
 ################## Pointing ###############################
@@ -245,9 +245,14 @@ sub observeTargetOTF{
 
 	LST();
     $targel=checkEl($souString);
-    if($targel < $MINEL_TARG)
+
+    # OTF can take up to ~15 min. To avoid hitting elevation limits during the
+    # OTF scan, add a small el buffer to the minumum.
+    my $elLimitBuffer = 1.5;
+
+    if($targel < $MINEL_TARG + $elLimitBuffer)
         {
-            print "Target elevation for $souString is $targel below min elevation limit of $MINEL_GAIN.  Skipping observation.\n";
+            print "Target elevation for $souString is $targel below min elevation limit of $MINEL_GAIN (+ $elLimitBuffer buffer for long OTF scans).  Skipping observation.\n";
             return 1;
         }
 
@@ -378,7 +383,7 @@ sub observeTargetLoopOTFInterleave {
         }
 
         # Start row 0.
-        observeTargetOTF($scienceSouString,
+        my $resultOTF0 = observeTargetOTF($scienceSouString,
                          $intLengthTarget,
                          $rowLengthOTF,
                          $rowOffsetTwice,
@@ -386,6 +391,12 @@ sub observeTargetLoopOTFInterleave {
                          $posAngleOTF ,
                          $startRow1,
                          $scanSpeedOTF);
+
+        # if 1 is returned, skip to end of loop
+        if ($resultOTF0 == 1) {
+            print "Source not observable. Skipping to end of loop.\n";
+            last;
+        }
 
         my $gain0_result = observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
         my $gain1_result = observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
@@ -402,6 +413,12 @@ sub observeTargetLoopOTFInterleave {
                          $posAngleOTF ,
                          $startRow2,
                          $scanSpeedOTF);
+
+        # if 1 is returned, skip to end of loop
+        if ($resultOTF0 == 1) {
+            print "Source not observable. Skipping to end of loop.\n";
+            last;
+        }
 
         # Write to restartfile.txt.
         # Here we consider a single loop is both interleaved parts.

@@ -103,9 +103,14 @@ sub observeTargetOTF{
 
 	LST();
     $targel=checkEl($souString);
-    if($targel < $MINEL_TARG)
+
+    # OTF can take up to ~15 min. To avoid hitting elevation limits during the
+    # OTF scan, add a small el buffer to the minumum.
+    my $elLimitBuffer = 1.5;
+
+    if($targel < $MINEL_TARG + $elLimitBuffer)
         {
-            print "Target elevation for $souString is $targel below min elevation limit of $MINEL_GAIN.  Skipping observation.\n";
+            print "Target elevation for $souString is $targel below min elevation limit of $MINEL_GAIN (+ $elLimitBuffer buffer for long OTF scans).  Skipping observation.\n";
             return 1;
         }
 
@@ -118,7 +123,7 @@ sub observeTargetOTF{
         my $row_ramp_delay = 3.0; # default row delay
         my $init_delay = 3.0; # default initial delay
         my $total_time = $init_delay + ($nRows * $row_time) + (($nRows) * $row_delay)  + (($nRows) * $row_ramp_delay);
-        printf("[SIMULATION MODE] observeTargetOTF: Would observe %s for %d seconds, %d rows, scan speed %.2f arcsec/s. Estimated time: %.1f seconds.\n",
+        printf("[SIMULATION MODE] observeTargetOTF: Would observe %s for %.1f seconds, %d rows, scan speed %.2f arcsec/s. Estimated time: %.1f seconds.\n",
             $souString, $intLength, $nRows, $scanSpeed, $total_time);
         $unixTime = $unixTime + $total_time;
         @lookup_time = localtime($unixTime);

@@ -254,12 +254,29 @@ sub observeTargetLoopOTF {
                 print "Starting OTF map $mapsPerLoopCounter of $numOTFperLoop\n";
             }
 
-            observeTargetOTF($scienceSouString, $intLengthTarget,
-                            $rowLengthOTF, $rowOffsetOTF,
-                            $nRowsOTF, $posAngleOTF,
+            # Start row 1
+            my $resultOTF1 = observeTargetOTF($scienceSouString,
+                            $intLengthTarget,
+                            $rowLengthOTF,
+                            $rowOffsetTwice,
+                            $nRows2,
+                            $posAngleOTF ,
+                            $startRow2,
                             $scanSpeedOTF);
 
+            # if 1 is returned, skip to end of loop
+            if ($resultOTF1 == 1) {
+                print "Source not observable. Skipping to end of loop.\n";
+                last;
+            }
+
             $mapsPerLoopCounter++;
+        }
+
+        # if 1 is returned, skip to end of loop
+        if ($resultOTF1 == 1) {
+            print "Source not observable. Skipping to end of loop.\n";
+            last;
         }
 
         # Write to restartfile.txt.
@@ -356,7 +373,7 @@ sub observeTargetLoopOTFInterleave {
         observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
 
         # Start row 0.
-        observeTargetOTF($scienceSouString,
+        my $resultOTF0 = observeTargetOTF($scienceSouString,
                          $intLengthTarget,
                          $rowLengthOTF,
                          $rowOffsetTwice,
@@ -365,11 +382,18 @@ sub observeTargetLoopOTFInterleave {
                          $startRow1,
                          $scanSpeedOTF);
 
+
+        # if 1 is returned, skip to end of loop
+        if ($resultOTF0 == 1) {
+            print "Source not observable. Skipping to end of loop.\n";
+            last;
+        }
+
         observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
         observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
 
         # Start row 1
-        observeTargetOTF($scienceSouString,
+        my $resultOTF1 = observeTargetOTF($scienceSouString,
                          $intLengthTarget,
                          $rowLengthOTF,
                          $rowOffsetTwice,
@@ -377,6 +401,12 @@ sub observeTargetLoopOTFInterleave {
                          $posAngleOTF ,
                          $startRow2,
                          $scanSpeedOTF);
+
+        # if 1 is returned, skip to end of loop
+        if ($resultOTF1 == 1) {
+            print "Source not observable. Skipping to end of loop.\n";
+            last;
+        }
 
         # Write to restartfile.txt.
         # Here we consider a single loop is both interleaved parts.
@@ -471,7 +501,7 @@ sub observeTargetLoopOTFInterleaveMulti {
         my $nRows2 = ceil($nRowsOTF / 2);
 
         # Start row 0.
-        observeTargetOTF($scienceSouString,
+        my $resultOTF0 = observeTargetOTF($scienceSouString,
                          $intLengthTarget,
                          $rowLengthOTF,
                          $rowOffsetTwice,
@@ -480,11 +510,18 @@ sub observeTargetLoopOTFInterleaveMulti {
                          $startRow1,
                          $scanSpeedOTF);
 
+
+        # if 1 is returned, skip to end of loop
+        if ($resultOTF0 == 1) {
+            print "Source not observable. Skipping to end of loop.\n";
+            last;
+        }
+
         observeGainTarget($gainSouString0, $ncal0, $intLengthGain0, 1);
         observeGainTarget($gainSouString1, $ncal1, $intLengthGain1, 1);
 
         # Start row 1
-        observeTargetOTF($scienceSouString,
+        my $resultOTF1 = observeTargetOTF($scienceSouString,
                          $intLengthTarget,
                          $rowLengthOTF,
                          $rowOffsetTwice,
@@ -493,6 +530,11 @@ sub observeTargetLoopOTFInterleaveMulti {
                          $startRow2,
                          $scanSpeedOTF);
 
+        # if 1 is returned, skip to end of loop
+        if ($resultOTF1 == 1) {
+            print "Source not observable. Skipping to end of loop.\n";
+            last;
+        }
         # Write to restartfile.txt.
         # Here we consider a single target is both interleaved parts.
         open(my $rfh, '>', 'restartfile.txt');

@@ -106,7 +106,7 @@ sub observeTargetOTF{
 
     # OTF can take up to ~15 min. To avoid hitting elevation limits during the
     # OTF scan, add a small el buffer to the minumum.
-    my $elLimitBuffer = 1.5;
+    my $elLimitBuffer = 2;
 
     if($targel < $MINEL_TARG + $elLimitBuffer)
         {
